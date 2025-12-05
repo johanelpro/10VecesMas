@@ -51,11 +51,14 @@
             border-radius: 50%;
             opacity: 0.8;
             pointer-events: none;
-            animation: fall linear forwards;
+            animation: fall linear infinite; /* Cambiado de forwards a infinite */
         }
 
         @keyframes fall {
-            to {
+            0% {
+                transform: translateY(-10px);
+            }
+            100% {
                 transform: translateY(105vh);
             }
         }
@@ -98,6 +101,15 @@
                 transform: translateY(0);
             }
         }
+        
+        /* Estilos para los items de regalo dinámicos */
+        .gift-item {
+            transition: all 0.3s ease;
+        }
+        .gift-item:hover {
+            border-color: #165B33;
+            background-color: #f0fdf4;
+        }
     </style>
 </head>
 <body class="font-sans text-gray-800 relative">
@@ -106,10 +118,12 @@
     <div id="snow-container" class="fixed inset-0 pointer-events-none z-0"></div>
 
     <!-- Barra de navegación simple -->
-    <nav class="relative z-10 w-full p-6 flex justify-between items-center max-w-5xl mx-auto text-white">
-        <div class="flex items-center gap-3">
+    <!-- Se cambió justify-between por justify-end para mantener el texto a la derecha -->
+    <nav class="relative z-10 w-full p-6 flex justify-end items-center max-w-5xl mx-auto text-white">
+        <!-- Se agregaron clases absolute left-1/2 -translate-x-1/2 para centrar el logo -->
+        <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
             <!-- Nota: Usamos un placeholder si la imagen original no carga, o la URL original si es válida -->
-            <img src="https://sisplay.co/wp-content/uploads/2025/12/logo_blanco.png" onerror="this.src='https://placehold.co/150x50/transparent/white?text=10+Veces+Mas'" alt="Logo 10 Veces Más" class="h-10 md:h-12 w-auto object-contain">
+            <img src="https://sisplay.co/wp-content/uploads/2025/12/logo_blanco.png" onerror="this.src='https://placehold.co/150x50/transparent/white?text=10+Veces+Mas'" alt="Logo 10 Veces Más" class="h-12 md:h-14 w-auto object-contain">
         </div>
         <div class="text-sm font-light opacity-90 hidden sm:block">
             Campaña Navideña 2025
@@ -133,7 +147,7 @@
         <div class="glass-panel rounded-2xl p-6 md:p-10 fade-in-up" style="animation-delay: 0.2s;">
             <form id="donationForm" class="space-y-8">
                 
-                <!-- Sección 0: Tipo de Donación (Nuevo) -->
+                <!-- Sección 0: Tipo de Donación -->
                 <div class="space-y-4">
                     <div class="text-center mb-6">
                         <h2 class="text-xl font-serif text-gray-800">¿Cómo deseas ayudar?</h2>
@@ -193,39 +207,29 @@
                         </div>
                     </div>
 
-                    <!-- Sección 2: El Regalo -->
+                    <!-- Sección 2: El Regalo (Dinámica) -->
                     <div class="space-y-6">
-                        <div class="flex items-center gap-3 border-b border-gray-200 pb-2">
-                            <div class="bg-green-100 p-2 rounded-full text-xmas-green">
-                                <i data-lucide="gift"></i>
+                        <div class="flex items-center justify-between border-b border-gray-200 pb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-green-100 p-2 rounded-full text-xmas-green">
+                                    <i data-lucide="gift"></i>
+                                </div>
+                                <h2 class="text-xl font-serif text-gray-800">Detalles de los Regalos</h2>
                             </div>
-                            <h2 class="text-xl font-serif text-gray-800">Detalles de la Donación</h2>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Regalo</label>
-                                <select id="giftType" class="form-input w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-900">
-                                    <option value="deportivo">Juguete Deportivo (Futbol, baloncesto, Voleibol)</option>
-                                    <option value="mesa">Juego de Mesa</option>
-                                    <option value="ropa">Ropa (En Buen Estado)</option>
-                                    <option value="otros">Otros</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Rango de Edad Sugerido</label>
-                                <select class="form-input w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-900">
-                                    <option value="4-8">Niños (4-8 años)</option>
-                                    <option value="9-12">Pre-adolescentes (9-12 años)</option>
-                                    <option value="13+">Adolescentes (13+ años)</option>
-                                    <option value="todos">Cualquier edad</option>
-                                </select>
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Descripción breve del regalo</label>
-                                <textarea rows="2" placeholder="Ej. Un oso de peluche grande y dos juegos de mesa..." class="form-input w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-900"></textarea>
-                            </div>
+                        <!-- Contenedor de lista de regalos -->
+                        <div id="giftList" class="space-y-4">
+                            <!-- Los items se generarán aquí con JS -->
                         </div>
+
+                        <!-- Botón para agregar otro regalo -->
+                        <button type="button" onclick="addGiftItem()" class="group flex items-center gap-2 text-sm font-semibold text-xmas-green hover:text-green-800 transition-colors mt-2">
+                            <div class="bg-green-50 p-1.5 rounded-full group-hover:bg-green-100 transition-colors border border-green-200">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </div>
+                            Agregar otro tipo de regalo
+                        </button>
                     </div>
 
                     <!-- Sección 3: Logística -->
@@ -264,7 +268,7 @@
                             <div class="pt-4">
                                 <label class="flex items-center">
                                     <input type="checkbox" id="giftTerms" required class="rounded text-xmas-red focus:ring-xmas-red border-gray-300 h-4 w-4 custom-checkbox">
-                                    <span class="ml-2 text-sm text-gray-600">Acepto la política de datos y confirmo que el regalo está en buen estado.</span>
+                                    <span class="ml-2 text-sm text-gray-600">Acepto la política de datos y confirmo que los regalos están en buen estado.</span>
                                 </label>
                             </div>
                         </div>
@@ -289,10 +293,29 @@
                             <i data-lucide="banknote" class="w-8 h-8"></i>
                         </div>
                         <h3 class="text-2xl font-serif text-gray-900 mb-2">Tu aporte hace la diferencia</h3>
-                        <p class="text-gray-600 mb-8">
+                        <p class="text-gray-600 mb-6">
                             Para donaciones monetarias, por favor comunícate directamente con nuestro equipo financiero a través de WhatsApp. Ellos te guiarán en el proceso de forma segura.
                         </p>
                         
+                        <!-- Lista de financiamiento -->
+                        <div class="bg-white rounded-xl p-5 mb-8 border border-green-100 shadow-sm text-left max-w-sm mx-auto">
+                            <p class="text-sm font-semibold text-green-800 mb-3 uppercase tracking-wide text-center">Tu donación financia:</p>
+                            <ul class="space-y-3">
+                                <li class="flex items-center gap-3 p-2 rounded-lg hover:bg-green-50 transition-colors">
+                                    <div class="bg-green-100 text-green-600 p-2 rounded-full shrink-0">
+                                        <i data-lucide="ticket"></i>
+                                    </div>
+                                    <span class="text-gray-700 font-medium">Recreación y Actividades</span>
+                                </li>
+                                <li class="flex items-center gap-3 p-2 rounded-lg hover:bg-green-50 transition-colors">
+                                    <div class="bg-green-100 text-green-600 p-2 rounded-full shrink-0">
+                                        <i data-lucide="cookie"></i>
+                                    </div>
+                                    <span class="text-gray-700 font-medium">Refrigerios Navideños</span>
+                                </li>
+                            </ul>
+                        </div>
+
                         <a href="https://wa.link/b311hz" target="_blank" class="block w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex justify-center items-center gap-3 text-lg">
                             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                             Comunícate con Nosotros
@@ -340,6 +363,98 @@
         // Inicializar iconos
         lucide.createIcons();
 
+        // ----------------------------------------------------
+        // Lógica de Regalos Dinámicos
+        // ----------------------------------------------------
+        
+        function addGiftItem() {
+            const container = document.getElementById('giftList');
+            const index = container.children.length; // Para IDs únicos si es necesario
+            
+            const giftItem = document.createElement('div');
+            giftItem.className = 'gift-item p-5 border border-gray-200 rounded-xl bg-gray-50/50 relative group';
+            
+            // HTML del bloque de regalo
+            giftItem.innerHTML = `
+                <!-- Botón Eliminar (Solo visible si hay más de uno) -->
+                <button type="button" class="delete-btn absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50 ${index === 0 ? 'hidden' : ''}" onclick="removeGiftItem(this)">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+                    <!-- Tipo de Regalo (5 columnas) -->
+                    <div class="md:col-span-5">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Regalo</label>
+                        <select name="giftType[]" required class="form-input w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900">
+                            <option value="deportivo">Juguete Deportivo (Futbol, baloncesto, Voleibol)</option>
+                            <option value="mesa">Juego de Mesa</option>
+                            <option value="ropa">Ropa (En Buen Estado)</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+
+                    <!-- Cantidad (2 columnas) - NUEVO -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad</label>
+                        <input type="number" name="giftQuantity[]" min="1" value="1" required class="form-input w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-center">
+                    </div>
+
+                    <!-- Rango de Edad (5 columnas) -->
+                    <div class="md:col-span-5">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Edad Sugerida</label>
+                        <select name="giftAge[]" required class="form-input w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900">
+                            <option value="4-8">Niños (4-8 años)</option>
+                            <option value="9-12">Pre-adolescentes (9-12 años)</option>
+                            <option value="13+">Adolescentes (13+ años)</option>
+                            <option value="todos">Cualquier edad</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Descripción breve (Opcional)</label>
+                    <input type="text" name="giftDesc[]" placeholder="Ej. Balón número 5..." class="form-input w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900">
+                </div>
+            `;
+            
+            container.appendChild(giftItem);
+            lucide.createIcons(); // Renderizar iconos nuevos
+            updateDeleteButtons();
+        }
+
+        function removeGiftItem(button) {
+            const container = document.getElementById('giftList');
+            if (container.children.length > 1) {
+                button.closest('.gift-item').remove();
+                updateDeleteButtons();
+            }
+        }
+
+        function updateDeleteButtons() {
+            const container = document.getElementById('giftList');
+            const items = container.querySelectorAll('.gift-item');
+            
+            items.forEach(item => {
+                const btn = item.querySelector('.delete-btn');
+                if (items.length === 1) {
+                    btn.classList.add('hidden');
+                } else {
+                    btn.classList.remove('hidden');
+                }
+            });
+        }
+
+        // Inicializar con un regalo
+        document.addEventListener('DOMContentLoaded', () => {
+            addGiftItem();
+        });
+
+
+        // ----------------------------------------------------
+        // Lógica General
+        // ----------------------------------------------------
+
         // Lógica de Toggle de Donación
         function toggleDonationType(type) {
             const giftFlow = document.getElementById('giftFlow');
@@ -349,7 +464,7 @@
             if (type === 'money') {
                 giftFlow.classList.add('hidden');
                 moneyFlow.classList.remove('hidden');
-                // Deshabilitar required para que no bloquee el "envio" si por error se intenta enviar
+                // Deshabilitar required
                 inputs.forEach(input => input.required = false);
             } else {
                 giftFlow.classList.remove('hidden');
@@ -357,8 +472,13 @@
                 // Rehabilitar required
                 const inputAddress = document.getElementById('inputAddress');
                 inputs.forEach(input => {
-                    if (input !== inputAddress) input.required = true;
+                    if (input !== inputAddress && !input.closest('.hidden')) input.required = true;
                 });
+                
+                // Asegurar que los inputs del giftList tengan required
+                const giftInputs = document.getElementById('giftList').querySelectorAll('input[type="number"], select');
+                giftInputs.forEach(i => i.required = true);
+
                 // Restaurar lógica de dirección
                 const pickupChecked = document.querySelector('input[name="delivery"][value="pickup"]').checked;
                 toggleAddress(pickupChecked);
@@ -408,6 +528,11 @@
                 btn.disabled = false;
                 this.reset();
                 toggleAddress(false);
+                
+                // Resetear lista de regalos a 1
+                document.getElementById('giftList').innerHTML = '';
+                addGiftItem();
+                
                 // Asegurar que volvemos a la vista de regalo por defecto
                 document.querySelector('input[name="donationType"][value="gift"]').checked = true;
                 toggleDonationType('gift');
